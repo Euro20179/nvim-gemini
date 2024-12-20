@@ -6,6 +6,36 @@ local config = {
     ---@param content string[]
     open_mime = function(content, url, mime)
         local filetype = M.mimetype_lookup[mime]
+        if not vim.startswith(mime, "text/") then
+            vim.ui.select({
+                "Open in external program",
+                "Open anyway"
+            }, {
+                prompt = "Non text content"
+            }, function(choice)
+                    if choice == nil then
+                        return
+                    elseif choice == "Open in external program" then
+                        local tmp = vim.fn.tempname()
+                        local f = io.open(tmp, "w")
+
+                        if f == nil then
+                            return
+                        end
+
+                        f:write(table.concat(content, "\n"))
+                        f:close()
+
+                        vim.ui.open(tmp)
+                    elseif choice == "Open anyway" then
+                        if filetype == nil then
+                            filetype = "text"
+                        end
+                        M.openwindow(content, url, filetype)
+                    end
+            end)
+            return
+        end
         if filetype == nil then
             filetype = "text"
         end
@@ -121,8 +151,8 @@ function M.request(url)
         result = vim.system({ "gmni", "-j", "always", "-i", url }):wait()
     end
 
-    local header = vim.fn.split(result.stdout, "\n")[1]
-    local text = vim.fn.slice(vim.fn.split(result.stdout, "\n"), 1)
+    local header = vim.split(result.stdout, "\n", { plain = true})[1]
+    local text = vim.fn.slice(vim.split(result.stdout, "\n", { plain = true}), 1)
 
     local sep = string.find(header, " ")
 
@@ -181,7 +211,8 @@ function M.openurl(url)
         local texts = {
             [41] = "This server is currently unavailble due to overload or maintenance",
             [42] = "A CGI or similar system for generating dynamic content failed",
-            [43] = "A proxy request failed because the server was unable to successfully complete a transaction with the remote host",
+            [43] =
+            "A proxy request failed because the server was unable to successfully complete a transaction with the remote host",
             [44] = "Too many requests"
         }
         local errtext = texts[statusNr]
