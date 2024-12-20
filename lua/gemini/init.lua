@@ -1,6 +1,7 @@
 local M = {}
 
 local config = {
+    certificates = {},
     ---@param mime string
     ---@param url string
     ---@param content string[]
@@ -134,7 +135,32 @@ local function number2status(number)
 end
 
 function M.request(url)
-    local result = vim.system({ "gmni", "-i", url }):wait()
+
+    local args = {"gmni", "-i"}
+
+    local domain = vim.split(url, "/")[3]
+
+    local certFile, keyFile
+    if config.certificates[domain] ~= nil then
+        local files = config.certificates[domain]
+        certFile = vim.fn.expand(files.cert)
+        keyFile = vim.fn.expand(files.key)
+    end
+
+    --Both must be set, otherwise neither are set
+    if certFile == nil or keyFile == nil then
+        certFile = nil
+        keyFile = nil
+    end
+
+    if certFile ~= nil then
+        args[#args+1] = "-E"
+        args[#args+1] = certFile .. ":" .. keyFile
+    end
+
+    args[#args+1] = url
+
+    local result = vim.system(args):wait()
 
     if result.code == 1 then
         vim.print("Invalid url")
