@@ -156,7 +156,7 @@ local function setup()
             M.openurl(name)
 
             vim.bo.modified = false
-            vim.cmd.norm("gg")
+            vim.api.nvim_win_set_cursor(0, { 1, 0 })
         end
     })
 end
