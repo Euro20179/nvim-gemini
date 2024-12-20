@@ -162,6 +162,49 @@ function M.openurl(url)
         config.open_mime(text, url, mime)
     elseif status == M.status.REDIRECT then
         M.openurl(info)
+    elseif status == M.status.INPUT then
+        local isSensitive = statusNr == 11
+        local resp
+        if isSensitive then
+            resp = vim.fn.inputsecret(info .. ">")
+        else
+            resp = vim.fn.input(info .. "> ")
+        end
+        if resp == nil or resp == "" then
+            return
+        end
+        local query = vim.uri_encode(resp)
+        M.openurl(url .. "?" .. query)
+    elseif status == M.status.TEMP_FAILURE then
+        local texts = {
+            [41] = "This server is currently unavailble due to overload or maintenance",
+            [42] = "A CGI or similar system for generating dynamic content failed",
+            [43] = "A proxy request failed because the server was unable to successfully complete a transaction with the remote host",
+            [44] = "Too many requests"
+        }
+        local errtext = texts[statusNr]
+        if errtext == nil then
+            errtext = "An error occured got: " .. tostring(statusNr)
+        end
+        vim.cmd.echohl("Error")
+        vim.print(text)
+        vim.cmd.echohl("None")
+    elseif status == M.status.PERMANENT_FAILURE then
+        local texts = {
+            [51] = "Not found",
+            [52] = "Gone",
+            [53] = "Proxy request refused",
+            [54] = "Bad request"
+        }
+        local errtext = texts[statusNr]
+        if errtext == nil then
+            errtext = "An error occured got: " .. tostring(statusNr)
+        end
+        vim.cmd.echohl("Error")
+        vim.print(errtext)
+        vim.cmd.echohl("None")
+    elseif status == M.status.CLIENT_CERTIFICATE then
+        vim.notify("Client certificate errors are not implemented", vim.log.levels.ERROR)
     end
 end
 
