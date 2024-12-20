@@ -305,7 +305,7 @@ function M.openurl(url)
             [51] = "Not found",
             [52] = "Gone",
             [53] = "Proxy request refused",
-            [54] = "Bad request"
+            [59] = "Bad request"
         }
         local errtext = texts[statusNr]
         if errtext == nil then
