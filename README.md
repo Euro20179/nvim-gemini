@@ -14,3 +14,9 @@ g.setup{}
 ```
 
 Now, whenever you enter a `gemini://` file it will actually open it
+
+# Usage
+
+open a `gemini://` url with nvim
+
+to follow links use `gf`
