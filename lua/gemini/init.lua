@@ -135,7 +135,10 @@ local function joinPath(baseURL, currentURL, newURL)
         return currentURL .. vim.fn.slice(newURL, 1)
     else
         local base = vim.fs.dirname(currentURL)
-        return base .. "/" .. newURL
+        if not vim.endswith(currentURL, "/") then
+            return base .. "/" .. newURL
+        end
+        return currentURL .. newURL
     end
 end
 
@@ -333,6 +336,7 @@ function M.openwindow(text, url, filetype)
     -- vim.api.nvim_buf_set_lines(buf, 0, 0, false, text)
     -- vim.bo[buf].filetype = filetype
 
+    vim.api.nvim_buf_set_name(0, url)
     vim.api.nvim_buf_set_lines(0, 0, 0, false, text)
     vim.bo.filetype = filetype
     vim.bo.modified = false
