@@ -42,6 +42,8 @@ local function joinPath(baseURL, currentURL, newURL)
         return baseURL .. newURL
     elseif string.find(newURL, "://") then
         return newURL
+    elseif vim.startswith(newURL, "?") then
+        return currentURL .. newURL
     else
         return currentURL .. '/' .. newURL
     end
