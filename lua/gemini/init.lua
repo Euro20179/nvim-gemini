@@ -1,47 +1,103 @@
 local M = {}
 
+---@param mime string
+---@param url string
+---@param content string[]
+local function open_mime(content, url, mime)
+    local filetype = M.mimetype_lookup[mime]
+    if not vim.startswith(mime, "text/") then
+        vim.ui.select({
+            "Open in external program",
+            "Open anyway"
+        }, {
+            prompt = "Non text content"
+        }, function(choice)
+            if choice == nil then
+                return
+            elseif choice == "Open in external program" then
+                local tmp = vim.fn.tempname()
+                local f = io.open(tmp, "w")
+
+                if f == nil then
+                    return
+                end
+
+                f:write(table.concat(content, "\n"))
+                f:close()
+
+                vim.ui.open(tmp)
+            elseif choice == "Open anyway" then
+                if filetype == nil then
+                    filetype = "text"
+                end
+                M.openwindow(content, url, filetype)
+            end
+        end)
+        return
+    end
+    if filetype == nil then
+        filetype = "text"
+    end
+    M.openwindow(content, url, filetype)
+end
+
+function M.submitinput(url, response)
+    if response == "" or response == nil then
+        return
+    end
+
+    local query = vim.uri_encode(response)
+    M.openurl(url .. "?" .. query)
+end
+
+---@param url string
+---@param prompt string
+local function input(url, prompt)
+    local buf = vim.api.nvim_create_buf(false, false)
+
+    vim.bo[buf].buftype = "acwrite"
+
+    vim.api.nvim_buf_set_name(buf, "[GEMINI PROMPT]")
+
+    local w = vim.o.columns
+    local h = vim.o.lines
+    local win = vim.api.nvim_open_win(buf, true, {
+        relative = "editor",
+        width = w - 20,
+        height = h - 7,
+        col = 10,
+        row = 3,
+        style = "minimal",
+        border = "rounded",
+        title = prompt
+    })
+
+    vim.api.nvim_create_autocmd("BufWriteCmd", {
+        once = true,
+        buffer = buf,
+        callback = function()
+            local text = table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false), "\n")
+            vim.api.nvim_win_close(win, true)
+            vim.api.nvim_buf_delete(buf, {
+                force = true
+            })
+            M.submitinput(url, text)
+        end
+    })
+end
+
+---@param url string
+---@param prompt string
+local function input_secret(url, prompt)
+    local resp = vim.fn.inputsecret(prompt .. "> ")
+    M.submitinput(url, resp)
+end
+
 local config = {
     certificates = {},
-    ---@param mime string
-    ---@param url string
-    ---@param content string[]
-    open_mime = function(content, url, mime)
-        local filetype = M.mimetype_lookup[mime]
-        if not vim.startswith(mime, "text/") then
-            vim.ui.select({
-                "Open in external program",
-                "Open anyway"
-            }, {
-                prompt = "Non text content"
-            }, function(choice)
-                    if choice == nil then
-                        return
-                    elseif choice == "Open in external program" then
-                        local tmp = vim.fn.tempname()
-                        local f = io.open(tmp, "w")
-
-                        if f == nil then
-                            return
-                        end
-
-                        f:write(table.concat(content, "\n"))
-                        f:close()
-
-                        vim.ui.open(tmp)
-                    elseif choice == "Open anyway" then
-                        if filetype == nil then
-                            filetype = "text"
-                        end
-                        M.openwindow(content, url, filetype)
-                    end
-            end)
-            return
-        end
-        if filetype == nil then
-            filetype = "text"
-        end
-        M.openwindow(content, url, filetype)
-    end
+    open_mime = open_mime,
+    input = input,
+    input_secret = input_secret,
 }
 
 M.mimetype_lookup = {
@@ -135,8 +191,7 @@ local function number2status(number)
 end
 
 function M.request(url)
-
-    local args = {"gmni", "-i"}
+    local args = { "gmni", "-i" }
 
     local domain = vim.split(url, "/")[3]
 
@@ -154,11 +209,11 @@ function M.request(url)
     end
 
     if certFile ~= nil then
-        args[#args+1] = "-E"
-        args[#args+1] = certFile .. ":" .. keyFile
+        args[#args + 1] = "-E"
+        args[#args + 1] = certFile .. ":" .. keyFile
     end
 
-    args[#args+1] = url
+    args[#args + 1] = url
 
     local result = vim.system(args):wait()
 
@@ -177,8 +232,8 @@ function M.request(url)
         result = vim.system({ "gmni", "-j", "always", "-i", url }):wait()
     end
 
-    local header = vim.split(result.stdout, "\n", { plain = true})[1]
-    local text = vim.fn.slice(vim.split(result.stdout, "\n", { plain = true}), 1)
+    local header = vim.split(result.stdout, "\n", { plain = true })[1]
+    local text = vim.fn.slice(vim.split(result.stdout, "\n", { plain = true }), 1)
 
     local sep = string.find(header, " ")
 
@@ -222,17 +277,11 @@ function M.openurl(url)
         M.openurl(info)
     elseif status == M.status.INPUT then
         local isSensitive = statusNr == 11
-        local resp
         if isSensitive then
-            resp = vim.fn.inputsecret(info .. ">")
+            config.input_secret(url, info)
         else
-            resp = vim.fn.input(info .. "> ")
+            config.input(url, info)
         end
-        if resp == nil or resp == "" then
-            return
-        end
-        local query = vim.uri_encode(resp)
-        M.openurl(url .. "?" .. query)
     elseif status == M.status.TEMP_FAILURE then
         local texts = {
             [41] = "This server is currently unavailble due to overload or maintenance",
@@ -283,6 +332,7 @@ function M.openwindow(text, url, filetype)
 
     vim.api.nvim_buf_set_lines(0, 0, 0, false, text)
     vim.bo.filetype = filetype
+    vim.bo.modified = false
 
     -- return win, buf
 end
