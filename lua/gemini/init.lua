@@ -131,8 +131,11 @@ local function joinPath(baseURL, currentURL, newURL)
         return newURL
     elseif vim.startswith(newURL, "?") then
         return currentURL .. newURL
+    elseif vim.startswith(newURL, ".") then
+        return currentURL .. vim.fn.slice(newURL, 1)
     else
-        return currentURL .. '/' .. newURL
+        local base = vim.fs.dirname(currentURL)
+        return base .. "/" .. newURL
     end
 end
 
