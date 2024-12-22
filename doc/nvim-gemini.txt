@@ -1,25 +1,25 @@
-*gemini-client.txt*  A gemini client for neovim
+*nvim-gemini.txt*  A gemini client for neovim
 
 =============================================================================
-Usage                                           *gemini-client-usage*
+Usage                                           *nvim-gemini-usage*
 
 First call the setup function with an optional table described
-in the |gemini-client-config|
+in the |nvim-gemini-config|
 
 Next open a gemini url with >sh
     nvim gemini://the-url
 <
 =============================================================================
-Api                                             *gemini-client-api*
+Api                                             *nvim-gemini-api*
 
-setup({config}?)                                *gemini.setup*
+setup({config}?)                                *nvim-gemini.setup*
     sets up the client using the config.
 
     Parameters: ~
-      • {config} (`gemini.Config`) the configuration to use
+      • {config} (`nvim-gemini.Config`) the configuration to use
 
 
-request({url})                                  *gemini.request*
+request({url})                                  *nvim-gemini.request*
     Make a request to {url}.
 
     This function will prompt the user to trust the domain if the user
@@ -35,27 +35,27 @@ request({url})                                  *gemini.request*
       Metadata info
 
 
-submitinput({url}, {input})                     *gemini.submitinput*
+submitinput({url}, {input})                     *nvim-gemini.submitinput*
     Make a request to {url} using {input} as a query string
     {input} will be automatically uri encoded.
 
-    The request is made using |gemini.openurl|
+    The request is made using |nvim-gemini.openurl|
 
     Parameters: ~
       • {url} (`string`) The url to make a request to
       • {input} (`string`) The data to send as a query string
 
 
-openurl({url})                                  *gemini.openurl*
-    Make a request to {url} using |gemini.request|.
+openurl({url})                                  *nvim-gemini.openurl*
+    Make a request to {url} using |nvim-gemini.request|.
     It then checks the status code and acts accordingly:
     Status range 10: ~
-        Calls |gemini.Config.input_secret|
-        or |gemini.Config.input| depending on the status code
+        Calls |nvim-gemini.Config.input_secret|
+        or |nvim-gemini.Config.input| depending on the status code
     Status range 20: ~
-        Calls |gemini.Config.open_mime|
+        Calls |nvim-gemini.Config.open_mime|
     Status range 30: ~
-        Calls |gemini.openurl| with the new url
+        Calls |nvim-gemini.openurl| with the new url
     Status range 40: ~
         Prints an error depending on the exact status code
     Status range 50: ~
@@ -63,7 +63,7 @@ openurl({url})                                  *gemini.openurl*
     Status range 60: ~
         NOT IMPLEMENTED
 
-openwindow({text}, {url}, {filetype})           *gemini.openwindow*
+openwindow({text}, {url}, {filetype})           *nvim-gemini.openwindow*
     Sets the current buffer's name to {url}
     Sets the lines of the current buffer to {text}
     Sets the filetype of the current buffer to {filetype}
@@ -71,9 +71,9 @@ openwindow({text}, {url}, {filetype})           *gemini.openwindow*
 
 
 =============================================================================
-Configuration                                   *gemini-client-config*
+Configuration                                   *nvim-gemini-config*
 
-Configuration table                             *gemini.Config*
+Configuration table                             *nvim-gemini.Config*
 
 All config values are optional (DO NOT USE THIS CONFIG)
 >lua
@@ -81,50 +81,50 @@ All config values are optional (DO NOT USE THIS CONFIG)
         -- A key value pair list of client certificate paths for domains
         -- example:
         certificates = {
-            ["gemini.amazing-website.com"] = {
+            ["nvim-gemini.amazing-website.com"] = {
                 cert = "~/path/to/cert.pem",
                 key = "~/path/to/key.pem"
             }
         },
-        open_mime = function() end, -- see: |gemini.Config.open_mime|
-        input = function() end, -- see: |gemini.Config.input|
-        input_secret = function() end -- see: |gemini.Config.input_secret|
+        open_mime = function() end, -- see: |nvim-gemini.Config.open_mime|
+        input = function() end, -- see: |nvim-gemini.Config.input|
+        input_secret = function() end -- see: |nvim-gemini.Config.input_secret|
     }
 <
 
-opem_mime({content}, {url}, {mime})             *gemini.Config.open_mime*
-    This function is called in |gemini.openurl|
+opem_mime({content}, {url}, {mime})             *nvim-gemini.Config.open_mime*
+    This function is called in |nvim-gemini.openurl|
     when the status code is in the 20 range.
 
     It should open the contents of url with the given mimetype in mind
 
     Default behavior: ~
         If the given mimetype is `text/*`, it opens it using
-        |gemini.openwindow|
+        |nvim-gemini.openwindow|
 
         Otherwise it prompts if you'd like to open it externally or with
-        |gemini.openwindow|.
+        |nvim-gemini.openwindow|.
         To open it externaly, the contents are written to a temp file then
         |vim.ui.open| is called with that temp file
 
 
-input({url}, {prompt})                          *gemini.Config.input*
+input({url}, {prompt})                          *nvim-gemini.Config.input*
     Should:
       • Display {prompt}
       • Ask the user to type something
-      • call |gemini.submitinput| with the given {url} and response
+      • call |nvim-gemini.submitinput| with the given {url} and response
 
     Default behavior: ~
         open a floating window with {prompt} as the title
         when the user writes the buffer with |:w|, it submits the buffer
-        contents with |gemini.submitinput|
+        contents with |nvim-gemini.submitinput|
 
 
-input_secret({url}, {prompt})                   *gemini.Config.input_secret*
-    Should do the same things as |gemini.Config.input|
+input_secret({url}, {prompt})                   *nvim-gemini.Config.input_secret*
+    Should do the same things as |nvim-gemini.Config.input|
 
     Default behavior: ~
         call |inputsecret()| with the given prompt
-        submit the response with |gemini.submitinput|
+        submit the response with |nvim-gemini.submitinput|
 
  vim:tw=78:ts=8:noet:ft=help:norl:
