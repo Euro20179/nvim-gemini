@@ -127,7 +127,7 @@ All config values are optional (DO NOT USE THIS CONFIG)
         -- A key value pair list of client certificate paths for domains
         -- example:
         certificates = {
-            ["nvim-gemini.amazing-website.com"] = {
+            ["gemini.amazing-website.com"] = {
                 cert = "~/path/to/cert.pem",
                 key = "~/path/to/key.pem"
             }
