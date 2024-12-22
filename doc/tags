@@ -1,0 +1,13 @@
+gemini-client-api	gemini-client.txt	/*gemini-client-api*
+gemini-client-config	gemini-client.txt	/*gemini-client-config*
+gemini-client-usage	gemini-client.txt	/*gemini-client-usage*
+gemini-client.txt	gemini-client.txt	/*gemini-client.txt*
+gemini.Config	gemini-client.txt	/*gemini.Config*
+gemini.Config.input	gemini-client.txt	/*gemini.Config.input*
+gemini.Config.input_secret	gemini-client.txt	/*gemini.Config.input_secret*
+gemini.Config.open_mime	gemini-client.txt	/*gemini.Config.open_mime*
+gemini.openurl	gemini-client.txt	/*gemini.openurl*
+gemini.openwindow	gemini-client.txt	/*gemini.openwindow*
+gemini.request	gemini-client.txt	/*gemini.request*
+gemini.setup	gemini-client.txt	/*gemini.setup*
+gemini.submitinput	gemini-client.txt	/*gemini.submitinput*
