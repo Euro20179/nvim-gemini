@@ -34,4 +34,4 @@ To add certificates for a domain add the following to the setup table
 }
 ```
 
-See [the help doc](./doc/gemini-client.txt) for more
+See [the help doc](./doc/nvim-gemini.txt) for more
