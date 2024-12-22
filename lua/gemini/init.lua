@@ -98,7 +98,35 @@ local config = {
     open_mime = open_mime,
     input = input,
     input_secret = input_secret,
+    bookmark_file = ""
 }
+
+function M.addbookmark(url, label, default_line_number)
+    default_line_number = default_line_number or 1
+
+    if config.bookmark_file == "" then
+        vim.notify("the bookmark_file must be set in the setup config in order to add a bookmark", vim.log.levels.WARN)
+        return
+    end
+
+    local err, text = pcall(vim.fn.readfile, config.bookmark_file)
+    if err ~= nil then
+        text = {}
+        vim.fn.writefile({}, config.bookmark_file)
+    end
+
+    text[#text + 1] = string.format("%s|%d| %s", url, default_line_number, label)
+
+    vim.fn.writefile(text, config.bookmark_file)
+end
+
+function M.loadbookmarks(qf)
+    if qf == true then
+        vim.cmd.cfile(config.bookmark_file)
+    else
+        vim.cmd.lfile(config.bookmark_file)
+    end
+end
 
 M.mimetype_lookup = {
     ["text/gemini"] = "gemtext",

@@ -81,12 +81,40 @@ openurl({url})                                  *nvim-gemini.openurl*
     Status range 60: ~
         NOT IMPLEMENTED
 
+    Parameters: ~
+      • {url} (`string`) The url to open.
+
 openwindow({text}, {url}, {filetype})           *nvim-gemini.openwindow*
     Sets the current buffer's name to {url}
     Sets the lines of the current buffer to {text}
     Sets the filetype of the current buffer to {filetype}
     Lastly, sets 'modified' to false
 
+    Parameters: ~
+      • {text} (`string`) The text that the current buffer gets filled with
+      • {url} (`string`) The url that the text came from
+      • {filetype} (`string`) The filetype of {text}
+
+
+addbookmark({url}, {label}, {default_line_number}?) *nvim-gemini.addbookmark*
+    Adds a bookmark to `bookmark_file` defined in |nvim-gemini.Config|
+    if `bookmark_file` is not defined, this function fails.
+
+    bookmarks are stored in the |quickfix| format.
+
+    Parameters: ~
+      • {url} (`string`) The url to add to the bookmarks list
+      • {label} (`string`) The label that will appear in the |location-list|
+      • {default_line_number} (`number`) 
+          When following the bookmark, the buffer will be opened on this line
+          number.
+
+loadbookmarks({qf}?)                                  *nvim-gemini.loadbookmarks*
+    Opens all bookmarks in the |location-list|.
+    if {qf} is true, opens in |quickfix| instead.
+
+    Parameters: ~
+      • {qf} (`bool`) whether or not to open in th |quickfix| list
 
 =============================================================================
 Configuration                                   *nvim-gemini-config*
@@ -104,6 +132,10 @@ All config values are optional (DO NOT USE THIS CONFIG)
                 key = "~/path/to/key.pem"
             }
         },
+        -- the format of the bookmarks file is simply
+        -- the nvim quickfixlist format
+        bookmark_file = "", -- the file to store bookmarks
+                            -- see |nvim-gemini.addbookmark|
         open_mime = function() end, -- see: |nvim-gemini.Config.open_mime|
         input = function() end, -- see: |nvim-gemini.Config.input|
         input_secret = function() end -- see: |nvim-gemini.Config.input_secret|
@@ -152,4 +184,4 @@ input_secret({url}, {prompt})                   *nvim-gemini.Config.input_secret
         call |inputsecret()| with the given prompt
         submit the response with |nvim-gemini.submitinput|
 
- vim:tw=78:ts=8:noet:ft=help:norl:
+ vim:tw=78:ts=8:ft=help:norl:
