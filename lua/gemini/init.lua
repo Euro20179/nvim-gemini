@@ -239,7 +239,7 @@ function M.request(url)
     end
 
     local header = vim.split(result.stdout, "\n", { plain = true })[1]
-    local text = vim.fn.slice(vim.split(result.stdout, "\n", { plain = true }), 1)
+    local text = vim.fn.slice(vim.split(result.stdout, "\n", { plain = true }), 1, -1)
 
     local sep = string.find(header, " ")
 
@@ -337,7 +337,7 @@ function M.openwindow(text, url, filetype)
     -- vim.bo[buf].filetype = filetype
 
     vim.api.nvim_buf_set_name(0, url)
-    vim.api.nvim_buf_set_lines(0, 0, 0, false, text)
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, text)
     vim.bo.filetype = filetype
     vim.bo.modified = false
 
