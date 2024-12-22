@@ -12,6 +12,24 @@ Next open a gemini url with >sh
 =============================================================================
 Api                                             *nvim-gemini-api*
 
+mimetype_lookup                                 *nvim-gemini.mimetype_lookup*
+    A table consisting of key value pairs
+    the key is a mimetype, and the value is the corresponding vim filetype
+    Default: ~
+        text/gemini => gemtext
+        text/html => html
+        text/markdown => markdown
+
+    See also: ~
+        |nvim-gemini.addmime|
+        |nvim-gemini.Config.open_mime|
+
+
+addmime({mimetype}, {filetype}                 *nvim-gemini.addmime*
+    Adds {mimetype} with {filetype} as the value to
+    |nvim-gemini.mimetype_lookup|
+
+
 setup({config}?)                                *nvim-gemini.setup*
     sets up the client using the config.
 
@@ -99,13 +117,14 @@ opem_mime({content}, {url}, {mime})             *nvim-gemini.Config.open_mime*
     It should open the contents of url with the given mimetype in mind
 
     Default behavior: ~
-        If the given mimetype is `text/*`, it opens it using
-        |nvim-gemini.openwindow|
-
-        Otherwise it prompts if you'd like to open it externally or with
-        |nvim-gemini.openwindow|.
-        To open it externaly, the contents are written to a temp file then
-        |vim.ui.open| is called with that temp file
+	1. Get the corresponding vim filetype using
+	    |nvim-gemini.mimetype_lookup|
+	2. If the given mimetype is `text/*`, open it using
+	    |nvim-gemini.openwindow|
+	3. Otherwise, prompt to open externally or with
+	    |nvim-gemini.openwindow|
+	    To open it externaly, the contents are written to a temp file then
+	    |vim.ui.open| is called with that temp file
 
 
 input({url}, {prompt})                          *nvim-gemini.Config.input*
