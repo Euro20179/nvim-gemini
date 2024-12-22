@@ -3,7 +3,7 @@
 =============================================================================
 Usage                                           *nvim-gemini-usage*
 
-First call the setup function with an optional table described
+First call |nvim-gemini.setup| with an optional table described
 in the |nvim-gemini-config|
 
 Next open a gemini url with >sh
@@ -126,6 +126,11 @@ opem_mime({content}, {url}, {mime})             *nvim-gemini.Config.open_mime*
 	    To open it externaly, the contents are written to a temp file then
 	    |vim.ui.open| is called with that temp file
 
+    Parameters: ~
+      • {content} (`string`) The contents of the response
+      • {url} (`string`) the url where {content} came from
+      • {mime} (`string`) the mimetype of {content} according to {url}
+
 
 input({url}, {prompt})                          *nvim-gemini.Config.input*
     Should:
@@ -140,7 +145,8 @@ input({url}, {prompt})                          *nvim-gemini.Config.input*
 
 
 input_secret({url}, {prompt})                   *nvim-gemini.Config.input_secret*
-    Should do the same things as |nvim-gemini.Config.input|
+    Should do the same things as |nvim-gemini.Config.input|, but assume the
+    data being typed is sensitive, and should likely be hidden
 
     Default behavior: ~
         call |inputsecret()| with the given prompt

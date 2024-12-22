@@ -5,9 +5,11 @@ nvim-gemini.Config	nvim-gemini.txt	/*nvim-gemini.Config*
 nvim-gemini.Config.input	nvim-gemini.txt	/*nvim-gemini.Config.input*
 nvim-gemini.Config.input_secret	nvim-gemini.txt	/*nvim-gemini.Config.input_secret*
 nvim-gemini.Config.open_mime	nvim-gemini.txt	/*nvim-gemini.Config.open_mime*
+nvim-gemini.addmime	nvim-gemini.txt	/*nvim-gemini.addmime*
+nvim-gemini.mimetype_lookup	nvim-gemini.txt	/*nvim-gemini.mimetype_lookup*
 nvim-gemini.openurl	nvim-gemini.txt	/*nvim-gemini.openurl*
 nvim-gemini.openwindow	nvim-gemini.txt	/*nvim-gemini.openwindow*
 nvim-gemini.request	nvim-gemini.txt	/*nvim-gemini.request*
 nvim-gemini.setup	nvim-gemini.txt	/*nvim-gemini.setup*
 nvim-gemini.submitinput	nvim-gemini.txt	/*nvim-gemini.submitinput*
-nvim-nvim-gemini.txt	nvim-gemini.txt	/*nvim-nvim-gemini.txt*
+nvim-gemini.txt	nvim-gemini.txt	/*nvim-gemini.txt*
