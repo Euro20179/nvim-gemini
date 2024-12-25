@@ -180,11 +180,17 @@ local function setup()
 
             vim.keymap.set("n", "gf", function()
                 local path = vim.fn.expand("<cWORD>")
+
+                if path == "=>" then
+                    vim.cmd.norm("w")
+                    path = vim.fn.expand("<cWORD>")
+                end
+
                 local bufName = vim.api.nvim_buf_get_name(0)
                 local base = vim.iter(string.gmatch(bufName, "gemini://[^/]*")):totable()[1]
                 local newPath = joinPath(base, bufName, path)
                 vim.cmd.edit(newPath)
-            end)
+            end, { buffer = 0 })
             local name = vim.api.nvim_buf_get_name(0)
 
             M.openurl(name)
