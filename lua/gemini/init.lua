@@ -314,6 +314,7 @@ function M.openurl(url)
         local mime = filedata[1]
         config.open_mime(text, url, mime)
     elseif status == M.status.REDIRECT then
+        vim.notify(string.format("REDIRECTING to: %s", info))
         M.openurl(info)
     elseif status == M.status.INPUT then
         local isSensitive = statusNr == 11
@@ -370,7 +371,18 @@ function M.openwindow(text, url, filetype)
     -- vim.api.nvim_buf_set_lines(buf, 0, 0, false, text)
     -- vim.bo[buf].filetype = filetype
 
-    vim.api.nvim_buf_set_name(0, url)
+    ok, _ = pcall(vim.api.nvim_buf_set_name, 0, url)
+    if not ok then
+        local bufs = vim.api.nvim_list_bufs()
+        for _, buf in ipairs(bufs) do
+            if vim.api.nvim_buf_get_name(buf) == url then
+                vim.api.nvim_win_set_buf(0, buf)
+                return
+            end
+        end
+        vim.notify(string.format("It seems %s has already been loaded, but it's buffer could not be found", url), vim.log.levels.WARN)
+        return
+    end
     vim.api.nvim_buf_set_lines(0, 0, -1, false, text)
     vim.bo.filetype = filetype
     vim.bo.modified = false
