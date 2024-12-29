@@ -26,7 +26,7 @@ to follow links use `gf`
 To add certificates for a domain add the following to the setup table
 
 ```lua
-{
+certificates = {
     ["domain.example.com"] = {
         key = "~/path/to/key-file.pem",
         cert = "~/path/to/cert-file.pem"
