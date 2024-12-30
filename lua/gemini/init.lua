@@ -273,7 +273,7 @@ function M.request(url)
     end
 
     local header = vim.split(result.stdout, "\n", { plain = true })[1]
-    local text = vim.fn.slice(vim.split(result.stdout, "\n", { plain = true }), 1, -1)
+    local text = vim.fn.slice(vim.split(result.stdout, "\n", { plain = true }), 1)
 
     local sep = string.find(header, " ")
 
